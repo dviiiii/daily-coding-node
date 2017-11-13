@@ -5,9 +5,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 //
-const userModel = mongoose.model('Users', {
+const loginuserModel = mongoose.model('loginuser', {
     user 	: String,    //账号
     psd 	: String    //密码
 });
 //
-module.exports = userModel;
+module.exports = loginuserModel;

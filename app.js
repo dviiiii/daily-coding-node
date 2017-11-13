@@ -7,7 +7,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./mongodb/db');
 
-const login = require('./routes/login');
+const login = require('./routes/login');//登录
+const book = require('./routes/book');//读书
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/login', login);
+app.use('/book', book);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

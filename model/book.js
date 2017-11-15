@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 const bookModel = mongoose.model('book', {
     bookName 	: String,    //书名
     bookPageNumber 	: String,    //页码
-    process: String //进度
+    progress: String //进度
 });
 //
 module.exports = bookModel;

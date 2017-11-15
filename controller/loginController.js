@@ -4,23 +4,6 @@
 
 const loginuserModel = require('../model/login');
 
-// const reviewBook = {
-
-//     add: function (req, res, next) {
-//         const data = req.body;
-//         const fullData = getFullData(data);
-//
-//         const reviewBook = new reviewBookModel(fullData);
-//         reviewBook.save(function(err) {});
-//         res.json({msg: 'sucess!'})
-//     }
-// };
-//
-//
-//
-
-//
-
 const loginControll = {
     login: function (req, res, next) {
         const params = {

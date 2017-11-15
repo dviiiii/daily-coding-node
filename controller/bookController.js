@@ -63,14 +63,27 @@ const bookController = {
             if(err) {
                 res.json({state: 0});
             }else {
-                //TODO 进度
-
+                reviewinfoModel.find({bookName: parmas.bookName}, function (err, docs) {
+                    if(err) {
+                        console.log(err);
+                    } else {
+                        const progress = getProgess(parmas.bookPageNumber, docs);
+                        console.log(progress)
+                        bookModel.update({bookName: parmas.bookName}, {progress: progress}, function(err, docs) {
+                            if(err) {
+                                console.log(err);
+                            }else {
+                                console.log('更新进度成功！');
+                            }
+                        })
+                    }
+                });
                 res.json({state: 1});
             }
         })
     },
     queryReviewInfo (req, res, next) {
-        const date = moment().add(1, 'd').format('YYYY-MM-DD');
+        const date = moment().format('YYYY-MM-DD');
         reviewinfoModel.find({reviewDate: date}, function (err, docs) {
             if(err) {
                 res.json({
@@ -88,7 +101,7 @@ const bookController = {
             bookPageNumberE: req.body.bookPageNumberE
         };
 
-        const now = moment().add(1, 'd').format('YYYY-MM-DD');
+        const now = moment().format('YYYY-MM-DD');
         const index = req.body.reviewDate.indexOf(now);
         req.body.reviewDate.splice(index, 1);
 
@@ -120,6 +133,7 @@ const bookController = {
 
 };
 
+//得到复习时间
 function getFullData() {
     const one = moment().add(1, 'd').format('YYYY-MM-DD');
     const two = moment().add(2, 'd').format('YYYY-MM-DD');
@@ -128,6 +142,20 @@ function getFullData() {
     const fifteen = moment().add(15, 'd').format('YYYY-MM-DD');
 
     return [one, two, four, seven, fifteen];
+}
+
+//得到进度
+function getProgess(pageNumber, docs) {
+    let arr = [];
+
+    for(let i in docs) {
+        for(let start = parseInt(docs[i].bookPageNumberS), end = parseInt(docs[i].bookPageNumberE); start < end; start++) {
+            if(!arr[start]) arr[start] = 1;
+        }
+    }
+
+    const result = arr.filter((x) => { return x === 1 });
+    return parseInt(result.length*100/pageNumber);
 }
 
 

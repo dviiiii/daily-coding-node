@@ -9,7 +9,7 @@ const sendEmail = {
             service: '163',
             auth: {
                 user: 'dviiiii931245@163.com',
-                pass: 'foryou931245wei' //授权码,通过QQ获取
+                pass: 'foryou931245wei' //授权码,通过邮箱获取
 
             }
         });

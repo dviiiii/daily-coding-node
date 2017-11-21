@@ -12,8 +12,7 @@ const loginControll = {
         loginuserModel.find(params, function (err, docs) {
             if(err) {
                 res.json(err);
-            }else if(docs){
-                console.log(docs[0])
+            }else if(docs.length !== 0){
                 if(req.body.psd === docs[0].psd) {
                     res.json({
                         state: 1

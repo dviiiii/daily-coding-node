@@ -18,7 +18,7 @@ const bookController = {
             }else {
                 if(docs.length === 0) {
                     let parmas = req.body;
-                    parmas.process = '0';
+                    parmas.progress = '0';
                     bookModel.create(parmas, function (err, docs) {
                         if(err) {
                             res.json({

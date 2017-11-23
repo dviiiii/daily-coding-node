@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const db = require('./mongodb/db');
 
+const test = require('./controller/test'); //测试
 const schedule = require('./controller/schedule'); //定时器任务
 const login = require('./routes/login');//登录
 const book = require('./routes/book');//读书

@@ -164,97 +164,92 @@ Puppeteer从浏览器断开, 但是Chromium 进程运行. 调用后断开, 浏�
  event: 'error'
  <Error>
  当页面崩溃触发.
+ NOTE 错误事件在node中有特殊的含义，可以查看详细信息.
 
- NOTE error event has a special meaning in Node, see error events for details.
  event: 'frameattached'
-
  <Frame>
- Emitted when a frame is attached.
+当一个frame打开（连接）时触发.
 
  event: 'framedetached'
-
  <Frame>
- Emitted when a frame is detached.
+当一个frame断开（分离）时触发.
 
  event: 'framenavigated'
-
  <Frame>
- Emitted when a frame is navigated to a new url.
+当一个frame导航到一个新的url时触发.
 
  event: 'load'
-
- Emitted when the JavaScript load event is dispatched.
+当javascript加载完成时触发.
 
  event: 'metrics'
-
  <Object>
- title <string> The title passed to console.timeStamp.
- metrics <Object> Object containing metrics as key/value pairs. The values of metrics are of <number> type.
- Emitted when the JavaScript code makes a call to console.timeStamp. For the list of metrics see page.metrics.
+ title <string> 标题传递给 console.timeStamp.
+ metrics <Object> 对象包含 metrics 以键值对形式. metrics的值是数值类型.
+ Emitted 当javascript代码调用console.timeStamp. metrics列表见page.metrics.
 
  event: 'pageerror'
-
- <string> The exception message
- Emitted when an uncaught exception happens within the page.
+ <string> 异常消息
+ 当一个未捕获的异常在页面内发生时触发.
 
  event: 'request'
 
  <Request>
- Emitted when a page issues a request. The request object is read-only. In order to intercept and mutate requests, see page.setRequestInterception.
+ 当页面发出请求时触发. 请求对象是只读的. 为了拦截和改变请求, 详见 page.setRequestInterception.
 
  event: 'requestfailed'
 
  <Request>
- Emitted when a request fails, for example by timing out.
+ 当请求失败时触发, 例如超时.
 
  event: 'requestfinished'
 
  <Request>
- Emitted when a request finishes successfully.
+ 当请求成功完成时触发.
 
  event: 'response'
 
  <Response>
- Emitted when a response is received.
+ 当接收到响应时触发.
 
  page.$(selector)
 
- selector <string> A selector to query page for
+ selector <string> 用于查询页面的选择器
  returns: <Promise<?ElementHandle>>
- The method runs document.querySelector within the page. If no element matches the selector, the return value resolve to null.
+ 在页面内运行 document.querySelector 方法. 如果没有元素匹配选择器, 返回值解析为null.
 
- Shortcut for page.mainFrame().$(selector).
+ 快捷方式 page.mainFrame().$(selector).
 
  page.$$(selector)
 
- selector <string> A selector to query page for
+ selector <string> 用于查询页面的选择器
  returns: <Promise<Array<ElementHandle>>>
- The method runs document.querySelectorAll within the page. If no elements match the selector, the return value resolve to [].
+ 在页面内运行 document.querySelectorAll 方法. 如果没有元素匹配选择器, 返回值解析为 [].
 
- Shortcut for page.mainFrame().$$(selector).
+ 快捷方式 page.mainFrame().$$(selector).
 
  page.$$eval(selector, pageFunction[, ...args])
 
- selector <string> A selector to query frame for
- pageFunction <function> Function to be evaluated in browser context
- ...args <...Serializable|ElementHandle> Arguments to pass to pageFunction
- returns: <Promise<Serializable>> Promise which resolves to the return value of pageFunction
- This method runs document.querySelectorAll within the page and passes it as the first argument to pageFunction.
+ selector <string> 用于查询frame的选择器
+ pageFunction <function> 在浏览器环境中对函数进行评估
+ ...args <...Serializable|ElementHandle> 传递到页面函数的参数
+ returns: <Promise<Serializable>>  它将解析为pageFunction的返回值 of Promise
+ 在页面内运行 document.querySelectorAll 方法 and 把它作为第一个参数 to pageFunction.
 
- If pageFunction returns a Promise, then page.$$eval would wait for the promise to resolve and return its value.
+ If pageFunction returns a Promise, then page.$$eval 会等待 promise 的值和返回其值.
 
  Examples:
 
  const divsCounts = await page.$$eval('div', divs => divs.length);
+
+
  page.$eval(selector, pageFunction[, ...args])
 
- selector <string> A selector to query page for
- pageFunction <function> Function to be evaluated in browser context
- ...args <...Serializable|ElementHandle> Arguments to pass to pageFunction
- returns: <Promise<Serializable>> Promise which resolves to the return value of pageFunction
- This method runs document.querySelector within the page and passes it as the first argument to pageFunction. If there's no element matching selector, the method throws an error.
-
- If pageFunction returns a Promise, then page.$eval would wait for the promise to resolve and return its value.
+ selector <string> 用于查询页面的选择器
+ pageFunction <function>  在浏览器环境中对Function进行解析
+ ...args <...Serializable|ElementHandle> 传递到页面函数的参数
+ returns: <Promise<Serializable>> 它将解析为pageFunction的返回值 of Promise
+ 在页面内运行 document.querySelectorAll 方法 and 把它作为第一个参数 to pageFunction.
+ If pageFunction returns a Promise, then page.$$eval 会等待 promise 的值和返回其值.
 
  Examples:
 
@@ -266,11 +261,11 @@ Puppeteer从浏览器断开, 但是Chromium 进程运行. 调用后断开, 浏�
  page.addScriptTag(options)
 
  options <Object>
- url <string> Url of a script to be added.
- path <string> Path to the JavaScript file to be injected into frame. If path is a relative path, then it is resolved relative to current working directory.
- content <string> Raw JavaScript content to be injected into frame.
- returns: <Promise<ElementHandle>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
- Adds a <script> tag into the page with the desired url or content.
+ url <string> 要添加的脚本的Url。
+ path <string> 将被注入到frame中的JavaScript文件的路径. 如果路径是相对路径, 然后，相对于当前工作目录，它将被解析.
+ content <string> 将原始JavaScript内容注入到frame中.
+ returns: <Promise<ElementHandle>> 当脚本的onload触发时，它将解析到添加的标记 or 将脚本内容注入到frame中.
+ 在所需的url或者内容页面加入一个script标签.
 
  Shortcut for page.mainFrame().addScriptTag(options).
 

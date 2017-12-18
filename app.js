@@ -11,6 +11,7 @@ const test = require('./controller/test'); //测试
 const schedule = require('./controller/schedule'); //定时器任务
 const login = require('./routes/login');//登录
 const book = require('./routes/book');//读书
+const api = require('./routes/api');//API
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/login', login);
 app.use('/book', book);
+app.use('/api', api);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

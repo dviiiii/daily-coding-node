@@ -5,7 +5,8 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const db = require('./mongodb/db');
+// const db = require('./mongodb/db');
+const db = require('./sql/db');
 
 const test = require('./controller/test'); //测试
 const schedule = require('./controller/schedule'); //定时器任务

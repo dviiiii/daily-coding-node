@@ -7,6 +7,7 @@ const mysql = require('mysql');
 const config = require('../config/default');
 
 const db = mysql.createPool(config);
+console.log('数据连接成功！');
 
 const query=function(sql,options,callback){
     db.getConnection(function(err,conn){
@@ -23,14 +24,13 @@ const query=function(sql,options,callback){
     });
 };
 
-query("select * from loginusers where uId = ?", ['sysadmin'], function(err,results,fields){
-    //do something
-    console.log(err);
-    console.log('--------------');
-    console.log(results);
-    console.log('---------------');
-    console.log(fields);
-
-});
+// query("select * from loginusers where uId = ?", ['sysadmin'], function(err,results,fields){
+//     //do something
+//     console.log(err);
+//     console.log('--------------');
+//     console.log(results);
+//
+//
+// });
 
 module.exports = query;

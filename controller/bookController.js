@@ -2,51 +2,54 @@
  * Created by zzx on 2017/11/13.
  */
 
-const bookModel = require('../model/book');
-const reviewinfoModel = require('../model/reviewinfo');
-
 const moment = require('moment');
-
+const sqlQuery = require('../sql/db');
 
 const bookController = {
     addBook (req, res, next) {
-        bookModel.find({bookName: req.body.bookName}, function (err, docs) {
-            if(err) {
-                res.json({
-                    state: 0
-                });
-            }else {
-                if(docs.length === 0) {
-                    let parmas = req.body;
-                    parmas.progress = '0';
-                    bookModel.create(parmas, function (err, docs) {
-                        if(err) {
-                            res.json({
-                                state: 0
-                            });
-                        }else if(docs) {
-                            res.json({
-                                state: 1
-                            })
-                        }
-                    });
-                }else {
-                    res.json({state: 2});
+        const uid = 'admin';//TODO 需要更换为动态获取
+        const params = {
+            bookName: req.body.bookName,
+            bookPageNumber: req.body.bookPageNumber,
+            bookSort: req.body.bookSort
+        };
 
-                }
+        sqlQuery('select id from book_info where uId = ? and bookname =?', [uid, params.bookName], function (err,results,fields) {
+            if(err) {
+                res.json(err);
+            } else if(results.length) {
+                res.json({
+                    state: 0,
+                    msg: '不能重复添加同一书籍！'
+                })
+            } else {
+                sqlQuery('insert into book_info(uId, bookname, pagenumber, sort, status) values(?,?,?,?,0)',[uid, params.bookName, params.bookPageNumber, params.bookSort], function (err,results,fields) {
+                    if(err) {
+                        res.json(err);
+                    } else {
+                        res.json({
+                            state: 1,
+                            msg: '书籍新增成功！'
+                        })
+                    }
+                })
             }
+
+
         });
     },
     queryBookInfo (req, res, next) {
-        bookModel.find({}, function (err, docs) {
-            if(err) {
-                res.json({
-                    state: 0
-                });
-            }else {
-                res.json(docs);
-            }
-        });
+        // var sql = 'select * from '
+        // sqlQuery();
+        // bookModel.find({}, function (err, docs) {
+        //     if(err) {
+        //         res.json({
+        //             state: 0
+        //         });
+        //     }else {
+        //         res.json(docs);
+        //     }
+        // });
     },
     addReading (req, res, next) {
         const parmas = req.body;
@@ -58,7 +61,6 @@ const bookController = {
             parmas.bookPageNumberE = temp;
         }
 
-
         reviewinfoModel.create(parmas, function (err, docs) {
             if(err) {
                 res.json({state: 0});
@@ -68,7 +70,6 @@ const bookController = {
                         console.log(err);
                     } else {
                         const progress = getProgess(parmas.bookPageNumber, docs);
-                        console.log(progress)
                         bookModel.update({bookName: parmas.bookName}, {progress: progress}, function(err, docs) {
                             if(err) {
                                 console.log(err);

@@ -877,16 +877,22 @@ Puppeteer从浏览器断开, 但是Chromium 进程运行. 调用后断开, 浏�
 const puppeteer = require('puppeteer');
 
 function run() {
-    // puppeteer.launch().then(async browser => {
-    //     console.log('正在打开浏览器');
-    //     const page = await browser.newPage();
-    //     console.log('正在打开https://baidu.com');
-    //     await page.goto('https://baidu.com');
-    //     console.log('正在打开截屏');
-    //     await page.screenshot({path: '../test/baidu.png'});
-    //     console.log('截屏完成');
-    //     await browser.close();
-    // });
+    puppeteer.launch().then(async browser => {
+        console.log('正在打开浏览器');
+        const page = await browser.newPage();
+        console.log('正在打开http://www.biquge.cm/');
+        await page.goto('http://www.biquge.cm/');
+        const searchkey = await page.$('#searchkey');
+        const btn = await page.$('#sss');
+        await searchkey.click();
+        await searchkey.type('逆流纯真年代');
+        await btn.click();
+        await page.goto();
+        console.log('正在打开截屏');
+        await page.screenshot({path: './test/test.png'});
+        console.log('截屏完成');
+        await browser.close();
+    });
 }
 
 run();

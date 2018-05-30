@@ -38,48 +38,32 @@ const bookController = {
 
         });
     },
-    queryBookInfo (req, res, next) {
-        // var sql = 'select * from '
-        // sqlQuery();
-        // bookModel.find({}, function (err, docs) {
-        //     if(err) {
-        //         res.json({
-        //             state: 0
-        //         });
-        //     }else {
-        //         res.json(docs);
-        //     }
-        // });
+    queryBookList (req, res, next) {
+        const user = 'admin';
+
+        sqlQuery('select * from book_info where uId = ?', [user], function (err,results,fields) {
+                if(err) {
+                    res.json(err);
+                } else {
+                    res.json(results)
+                }
+        })
     },
     addReading (req, res, next) {
-        const parmas = req.body;
-        parmas.reviewDate = getFullData();
-
-        if(parmas.bookPageNumberS > parmas.bookPageNumberE) {
-            const temp = parmas.bookPageNumberS;
-            parmas.bookPageNumberS = parmas.bookPageNumberE;
-            parmas.bookPageNumberE = temp;
-        }
-
-        reviewinfoModel.create(parmas, function (err, docs) {
+        const uid = 'admin';
+        const date = moment().format('YYYY-MM-DD');
+        const params = {
+            bookid: req.body.bookid,
+            sp: req.body.bookPageNumberS,
+            ep: req.body.bookPageNumberE
+        };
+        sqlQuery('insert into read_log(uId,bookid,day,start_page,end_page) values(?,?,?,?,?)', [uid, params.bookid,date,params.sp,params.ep], function (err,results,fields) {
             if(err) {
-                res.json({state: 0});
-            }else {
-                reviewinfoModel.find({bookName: parmas.bookName}, function (err, docs) {
-                    if(err) {
-                        console.log(err);
-                    } else {
-                        const progress = getProgess(parmas.bookPageNumber, docs);
-                        bookModel.update({bookName: parmas.bookName}, {progress: progress}, function(err, docs) {
-                            if(err) {
-                                console.log(err);
-                            }else {
-                                console.log('更新进度成功！');
-                            }
-                        })
-                    }
-                });
-                res.json({state: 1});
+                res.json(err);
+            } else {
+                res.json({
+                    state: 1
+                })
             }
         })
     },

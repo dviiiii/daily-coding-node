@@ -12,11 +12,14 @@ const loginControll = {
         const hashPsd = crypto.createHmac('sha256', req.body.psd)
             .update('do').update('you').update('know').update('java')
             .digest('hex');
+        console.log(hashPsd)
         const params = {
             user: req.body.user
         };
         query("select uPsd from loginusers where uId = ?", [params.user], function(err,results,fields){
-                if(err) {
+            console.log(err)
+            console.log(results)
+            if(err) {
                     res.json(err);
                 }else if(results[0]){
                     if(hashPsd === results[0].uPsd) {

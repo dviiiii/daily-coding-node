@@ -6,7 +6,7 @@ const router = express.Router();
 const bookController = require('../controller/bookController');
 
 router.post('/addBook', bookController.addBook);
-router.get('/queryBookInfo', bookController.queryBookInfo);
+router.get('/queryBookList', bookController.queryBookList);
 router.post('/addReading', bookController.addReading);
 router.get('/queryReviewInfo', bookController.queryReviewInfo);
 router.post('/checkReview', bookController.checkReview);

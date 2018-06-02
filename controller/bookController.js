@@ -7,7 +7,7 @@ const sqlQuery = require('../sql/db');
 
 const bookController = {
     addBook (req, res, next) {
-        const uid = 'admin';//TODO 需要更换为动态获取
+        const uid = req.session.user;//TODO 需要更换为动态获取
         const params = {
             bookName: req.body.bookName,
             bookPageNumber: req.body.bookPageNumber,
@@ -39,9 +39,8 @@ const bookController = {
         });
     },
     queryBookList (req, res, next) {
-        const user = 'admin';
-
-        sqlQuery('select * from book_info where uId = ?', [user], function (err,results,fields) {
+        const user = req.session.user;
+        sqlQuery('select * from book_info where uId = ? AND is_delete = 0', [user], function (err,results,fields) {
                 if(err) {
                     res.json(err);
                 } else {
@@ -50,70 +49,128 @@ const bookController = {
         })
     },
     addReading (req, res, next) {
-        const uid = 'admin';
+
+        const uid = req.session.user;
         const date = moment().format('YYYY-MM-DD');
+        const review_date = moment().add(1, 'days').format('YYYY-MM-DD');
         const params = {
             bookid: req.body.bookid,
             sp: req.body.bookPageNumberS,
-            ep: req.body.bookPageNumberE
+            ep: req.body.bookPageNumberE,
+            uid: uid,
+            pagenumber: req.body.pagenumber
         };
-        sqlQuery('insert into read_log(uId,bookid,day,start_page,end_page) values(?,?,?,?,?)', [uid, params.bookid,date,params.sp,params.ep], function (err,results,fields) {
+        sqlQuery('insert into read_log(uId,bookid,day,start_page,end_page, review_day) values(?,?,?,?,?,?)', [uid, params.bookid,date,params.sp,params.ep, review_date], function (err,results,fields) {
             if(err) {
-                res.json(err);
-            } else {
+                console.log(err)
                 res.json({
-                    state: 1
-                })
-            }
-        })
-    },
-    queryReviewInfo (req, res, next) {
-        const date = moment().format('YYYY-MM-DD');
-        reviewinfoModel.find({reviewDate: date}, function (err, docs) {
-            if(err) {
+                    state: 1,
+                    meg: err
+                });
+            } else {
+                bookController.updateProgess(params);
                 res.json({
                     state: 0
+                })
+            }
+        });
+
+
+    },
+    queryReviewInfo (req, res, next) {
+        const uid = req.session.user;
+        const sql = "SELECT a.id, bookname, start_page, end_page, review_times FROM read_log a INNER JOIN book_info b on a.uId = ? and a.bookid = b.id AND a.uId = b.uId AND  b.sort = '0' AND review_times < 5 AND review_day <= CURDATE()";
+        sqlQuery(sql, [uid], function (err,results,fields) {
+            if(err) {
+                console.log(err)
+                res.json({
+                    state: 1,
+                    meg: err
                 });
-            }else {
-                res.json(docs);
+            } else {
+                res.json({
+                    state: 0,
+                    data: results
+                })
             }
         });
     },
     checkReview (req, res, next) {
         const params = {
-            bookName: req.body.bookName,
-            bookPageNumberS: req.body.bookPageNumberS,
-            bookPageNumberE: req.body.bookPageNumberE
+            id: req.body.id,
+            review_times: req.body.review_times
         };
 
-        const now = moment().format('YYYY-MM-DD');
-        const index = req.body.reviewDate.indexOf(now);
-        req.body.reviewDate.splice(index, 1);
+        let nextDate;
+        switch (params.review_times) {
+            case 0 :  nextDate = moment().add(1, 'days').format('YYYY-MM-DD'); break;
+            case 1 :  nextDate = moment().add(2, 'days').format('YYYY-MM-DD'); break;
+            case 2 :  nextDate = moment().add(4, 'days').format('YYYY-MM-DD'); break;
+            case 3 :  nextDate = moment().add(7, 'days').format('YYYY-MM-DD'); break;
+            case 4 :  nextDate = moment().add(15, 'days').format('YYYY-MM-DD'); break;
+            default: break;
+        }
 
-        reviewinfoModel.update(params, {$set: {reviewDate: req.body.reviewDate}}, function (err, docs) {
+        const sql = 'UPDATE read_log SET review_times = review_times + 1 , review_day = ? WHERE id = ?';
+        sqlQuery(sql, [nextDate, params.id], function (err,results,fields) {
             if(err) {
+                console.log(err)
+                res.json({
+                    state: 1,
+                    meg: err
+                });
+            } else {
                 res.json({
                     state: 0
-                });
-            }else {
-                res.json({
-                    state: 1
-                });
-            }
-        })
-    },
-    deleteBook (req, res, next) {
-        bookModel.deleteOne({bookName: req.body.bookName}, function (err, docs) {
-            if(err) {
-                res.json({
-                    state: 0
-                })
-            }else {
-                res.json({
-                    state: 1
                 })
             }
         });
+
+
+    },
+    deleteBook (req, res, next) {
+        const sql = 'UPDATE book_info SET is_delete = 1 WHERE id = ?';
+        const id = req.body.id;
+        console.log(req.body)
+        sqlQuery(sql, [id], function (err,results,fields) {
+            if(err) {
+                console.log(err)
+                res.json({
+                    state: 1,
+                    meg: err
+                });
+            } else {
+                res.json({
+                    state: 0
+                })
+            }
+        });
+    },
+    updateProgess(params) {
+        console.log(params)
+        const sql = 'SELECT start_page, end_page FROM read_log WHERE uId = ? AND bookid = ?';
+        sqlQuery(sql, [params.uid, params.bookid], function (err,results,fields) {
+            if(err) {
+                console.log(err);
+            } else {
+                let readArr = [];
+                for(let i in results) {
+                    for(let j = Number(results[i].start_page); j <  Number(results[i].end_page) + 1; j++) {
+                        if(readArr.indexOf(j) === -1) {
+                            readArr.push(j);
+                        }
+                    }
+                }
+
+                const num = Math.floor(readArr.length*100 / params.pagenumber);
+                sqlQuery('UPDATE book_info set progress = ? WHERE id = ?', [num, params.bookid], function (err,results,fields) {
+                    if(err) {
+                        console.log(err);
+                    }
+                })
+
+            }
+        })
     }
 
 };

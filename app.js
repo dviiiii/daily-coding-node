@@ -4,7 +4,8 @@ const favicon = require('serve-favicon');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const session = require('express-session');
+// const cors = require('cors');
 // const db = require('./mongodb/db');
 // const db = require('./sql/db');
 
@@ -22,12 +23,13 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(cors());
+// app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('dw'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({ secret: 'dw',resave: true, saveUninitialized:true}));
 
 
 

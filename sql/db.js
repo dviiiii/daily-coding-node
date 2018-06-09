@@ -7,7 +7,7 @@ const mysql = require('mysql');
 const config = require('../config/default');
 
 const db = mysql.createPool(config);
-console.log('数据连接成功！');
+console.log('数据连接成功');
 
 const query=function(sql,options,callback){
     db.getConnection(function(err,conn){

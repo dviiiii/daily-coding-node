@@ -20,6 +20,8 @@ const loginControll = {
                     res.json(err);
                 }else if(results[0]){
                     if(hashPsd === results[0].uPsd) {
+                        console.log(params.user);
+                        console.log('登录成功')
                         req.session.user = params.user;
                         res.json({
                             state: 1

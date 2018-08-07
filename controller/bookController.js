@@ -7,7 +7,7 @@ const sqlQuery = require('../sql/db');
 
 const bookController = {
     addBook (req, res, next) {
-        const uid = req.session.user;//TODO 需要更换为动态获取
+        const uid = 'admin';//TODO 需要更换为动态获取
         const params = {
             bookName: req.body.bookName,
             bookPageNumber: req.body.bookPageNumber,
@@ -39,7 +39,8 @@ const bookController = {
         });
     },
     queryBookList (req, res, next) {
-        const user = req.session.user;
+        const user = 'admin';
+        console.log(user);
         sqlQuery('select * from book_info where uId = ? AND is_delete = 0', [user], function (err,results,fields) {
                 if(err) {
                     res.json(err);
@@ -50,7 +51,7 @@ const bookController = {
     },
     addReading (req, res, next) {
 
-        const uid = req.session.user;
+        const uid = 'admin';
         const date = moment().format('YYYY-MM-DD');
         const review_date = moment().add(1, 'days').format('YYYY-MM-DD');
         const params = {
@@ -78,7 +79,7 @@ const bookController = {
 
     },
     queryReviewInfo (req, res, next) {
-        const uid = req.session.user;
+        const uid = 'admin';
         const sql = "SELECT a.id, bookname, start_page, end_page, review_times FROM read_log a INNER JOIN book_info b on a.uId = ? and a.bookid = b.id AND a.uId = b.uId AND  b.sort = '0' AND review_times < 5 AND review_day <= CURDATE()";
         sqlQuery(sql, [uid], function (err,results,fields) {
             if(err) {

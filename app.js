@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cors = require('cors');
 
-// const test = require('./controller/test'); //测试
+const test = require('./controller/test'); //测试
 // const schedule = require('./controller/schedule'); //定时器任务
 const login = require('./routes/login');//登录
 const book = require('./routes/book');//读书
@@ -25,15 +25,13 @@ app.set('view engine', 'jade');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(cors());
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser('dw'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'dw',resave: true, saveUninitialized:true}));
 
-
-
-
+app.use('/test', test);
 app.use('/login', login);
 app.use('/book', book);
 app.use('/api', api);
@@ -41,7 +39,7 @@ app.use('/api', api);
 app.use('/testapi', testapi);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
